@@ -1,15 +1,16 @@
 {
-  "version": 2,
   "builds": [
     {
-      "src": "index.html",
+      "src": "AI_Video_Generator_UI.html",
       "use": "@vercel/static"
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/",
+      "destination": "/AI_Video_Generator_UI.html"
     }
-  ]
+  ],
+  "cleanUrls": true,
+  "trailingSlash": false
 }
