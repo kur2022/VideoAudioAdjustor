@@ -31,3 +31,34 @@ An AI-powered, cross-platform video generation platform that transforms user-upl
 ---
 
 ## 📦 File Structure
+
+---
+
+## 🌐 Deployment
+
+This project is optimized for deployment on [Vercel](https://vercel.com).  
+To deploy:
+
+1. Connect your GitHub repo
+2. Set `AI_Video_Generator_UI.html` as the default route in `vercel.json`
+3. Publish and test across devices
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.  
+Feel free to fork, modify, and build commercial applications.
+
+---
+
+## 🤝 Contributing
+
+Pull requests are welcome. For major changes, please open an issue first to discuss what you’d like to change.
+
+---
+
+## 📬 Contact
+
+Built by [kur2022](https://github.com/kur2022)  
+For questions or collaborations, reach out via GitHub or email.
