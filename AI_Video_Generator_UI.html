@@ -1,44 +1,70 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Video Generator</title>
-    <link rel="manifest" href="manifest.json">
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .container { max-width: 800px; margin: auto; }
-        .upload-box { border: 2px dashed #ccc; padding: 20px; text-align: center; }
-        .preview { margin-top: 20px; }
-        .file-item { margin-bottom: 10px; }
-        @media (max-width: 600px) {
-            .container { padding: 10px; }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Video Generator</title>
+  <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #111; color: #fff; }
+    input, button { margin: 10px 0; padding: 10px; }
+    video { width: 100%; max-width: 600px; margin-top: 20px; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Upload Photos and Clips</h2>
-        <div class="upload-box">
-            <input type="file" id="mediaInput" multiple accept="image/*,video/*">
-        </div>
-        <div class="preview" id="preview"></div>
-    </div>
+  <h1>🎬 AI Video Generator</h1>
 
-    <script>
-        const input = document.getElementById('mediaInput');
-        const preview = document.getElementById('preview');
+  <label>Upload Image:</label><br />
+  <input type="file" id="imageInput" accept="image/*" /><br />
 
-        input.addEventListener('change', () => {
-            preview.innerHTML = '';
-            Array.from(input.files).forEach(file => {
-                const item = document.createElement('div');
-                item.className = 'file-item';
-                item.innerHTML = `<strong>${file.name}</strong> - AI analysis pending...`;
-                preview.appendChild(item);
-            });
-        });
-    </script>
+  <label>Upload Audio:</label><br />
+  <input type="file" id="audioInput" accept="audio/*" /><br />
+
+  <button onclick="generateVideo()">Generate Video</button>
+
+  <video id="preview" controls></video><br />
+  <a id="download" href="#" download="output.mp4">Download Video</a>
+
+  <script>
+    const { createFFmpeg, fetchFile } = FFmpeg;
+    const ffmpeg = createFFmpeg({ log: true });
+
+    async function loadFFmpeg() {
+      if (!ffmpeg.isLoaded()) {
+        await ffmpeg.load();
+      }
+    }
+
+    async function generateVideo() {
+      const imageFile = document.getElementById('imageInput').files[0];
+      const audioFile = document.getElementById('audioInput').files[0];
+      if (!imageFile || !audioFile) {
+        alert("Please upload both image and audio files.");
+        return;
+      }
+
+      await loadFFmpeg();
+
+      ffmpeg.FS('writeFile', 'input.jpg', await fetchFile(imageFile));
+      ffmpeg.FS('writeFile', 'music.mp3', await fetchFile(audioFile));
+
+      await ffmpeg.run(
+        '-loop', '1',
+        '-i', 'input.jpg',
+        '-i', 'music.mp3',
+        '-c:v', 'libx264',
+        '-t', '60',
+        '-pix_fmt', 'yuv420p',
+        '-vf', 'scale=1280:720',
+        'output.mp4'
+      );
+
+      const data = ffmpeg.FS('readFile', 'output.mp4');
+      const videoURL = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }));
+
+      document.getElementById('preview').src = videoURL;
+      document.getElementById('download').href = videoURL;
+    }
+  </script>
 </body>
 </html>
